@@ -1,4 +1,4 @@
-name: example_CI
+name: CI_CD_Pipeline
 
 on: [push, pull_request]
 
@@ -8,10 +8,10 @@ jobs:
     environment: Labo0
 
     steps:
-      - name: Checkout dépot
+      - name: Checkout dépôt
         uses: actions/checkout@v3
 
-      - name: Créer fichier .env 
+      - name: Créer fichier .env
         run: |
           echo "CALCULATOR_USERNAME=GithubActions" >> .env
 
@@ -26,8 +26,28 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
 
-      - name: Éxécuter les tests
+      - name: Exécuter les tests
         env:
           PYTHONPATH: ${{ github.workspace }}/src
-        run: | 
+        run: |
           python -m pytest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout dépôt
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t calculator .
+
+      - name: Stop ancien container
+        run: docker stop calculator || true
+
+      - name: Supprimer ancien container
+        run: docker rm calculator || true
+
+      - name: Lancer nouveau container
+        run: docker run -d --name calculator calculator

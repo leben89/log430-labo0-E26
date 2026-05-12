@@ -4,3 +4,5 @@ COPY src/ ./src/
 COPY requirements.txt ./
 ENV PYTHONPATH=/app/src
 RUN pip install --no-cache-dir -r requirements.txt
+CMD ["python", "src/calculator.py"]
+COPY .env ./
