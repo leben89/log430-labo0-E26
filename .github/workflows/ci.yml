@@ -1,33 +1,26 @@
-name: example_CI
+name: CD Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    environment: Labo0
+  deploy:
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout dépot
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Créer fichier .env 
-        run: |
-          echo "CALCULATOR_USERNAME=GithubActions" >> .env
+      - name: Build Docker image
+        run: docker build -t calculator .
 
-      - name: Installer Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+      - name: Stop old container
+        run: docker stop calculator || true
 
-      - name: Installer les dépendances
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+      - name: Remove old container
+        run: docker rm calculator || true
 
-      - name: Éxécuter les tests
-        env:
-          PYTHONPATH: ${{ github.workspace }}/src
-        run: | 
-          python -m pytest
+      - name: Run new container
+        run: docker run -d --name calculator calculator
