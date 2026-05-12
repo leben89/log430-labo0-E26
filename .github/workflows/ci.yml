@@ -1,53 +1,60 @@
 name: CI_CD_Pipeline
 
-on: [push, pull_request]
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: Labo0
-
     steps:
       - name: Checkout dépôt
-        uses: actions/checkout@v3
-
-      - name: Créer fichier .env
-        run: |
-          echo "CALCULATOR_USERNAME=GithubActions" >> .env
+        uses: actions/checkout@v4
 
       - name: Installer Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Installer les dépendances
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+          # On installe pytest même si requirements.txt est vide
+          pip install pytest 
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Exécuter les tests
+        # On définit le PYTHONPATH sur le dossier courant (.)
         env:
-          PYTHONPATH: ${{ github.workspace }}/src
+          PYTHONPATH: .
         run: |
           python -m pytest
 
   deploy:
     needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: self-hosted
 
     steps:
       - name: Checkout dépôt
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Créer fichier .env (pour le déploiement)
+        run: |
+          echo "USERNAME=GithubActions-Erick" > .env
 
       - name: Build Docker image
         run: docker build -t calculator .
 
-      - name: Stop ancien container
-        run: docker stop calculator || true
-
-      - name: Supprimer ancien container
-        run: docker rm calculator || true
+      - name: Stop et Supprimer l'ancien container
+        # On combine pour plus de propreté
+        run: |
+          docker stop calculator || true
+          docker rm calculator || true
 
       - name: Lancer nouveau container
+        # Note: On utilise -d car c'est un serveur, mais attention 
+        # car votre code actuel attend des inputs (stdin) !
         run: docker run -d --name calculator calculator
