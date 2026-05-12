@@ -11,4 +11,28 @@ def test_app():
     welcome_message = my_calculator.get_hello_message()
     assert "== Calculatrice v1.0 ==" in welcome_message
 
-# TODO: ajoutez les tests
+def test_addition():
+    calc = Calculator()
+    assert calc.addition(2, 3) == 5
+
+def test_subtraction():
+    calc = Calculator()
+    assert calc.subtraction(5, 3) == 2
+
+def test_multiplication():
+    calc = Calculator()
+    assert calc.multiplication(4, 3) == 12
+
+def test_division():
+    calc = Calculator()
+    assert calc.division(10, 2) == 5
+
+def test_division_by_zero():
+    calc = Calculator()
+    assert calc.division(10, 0) == "Erreur : division par zéro"
+
+# def test_addition_echec_volontaire():
+#     calc = Calculator()
+#     assert calc.addition(2, 2) == 5
+
+
