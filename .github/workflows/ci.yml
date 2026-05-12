@@ -1,60 +1,23 @@
-name: CI_CD_Pipeline
-
-on: 
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
 jobs:
+  # Le job de build peut rester sur les serveurs de GitHub pour économiser vos ressources
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout dépôt
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: python -m pytest
 
-      - name: Installer Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Installer les dépendances
-        run: |
-          python -m pip install --upgrade pip
-          # On installe pytest même si requirements.txt est vide
-          pip install pytest 
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Exécuter les tests
-        # On définit le PYTHONPATH sur le dossier courant (.)
-        env:
-          PYTHONPATH: .
-        run: |
-          python -m pytest
-
+  # Le job de déploiement DOIT s'exécuter sur votre serveur fiware-1
   deploy:
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: self-hosted
-
+    runs-on: self-hosted  # <--- C'est ici que vous faites le changement
     steps:
-      - name: Checkout dépôt
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Créer fichier .env (pour le déploiement)
+      - name: Build and Run Docker
         run: |
-          echo "USERNAME=GithubActions-Erick" > .env
-
-      - name: Build Docker image
-        run: docker build -t calculator .
-
-      - name: Stop et Supprimer l'ancien container
-        # On combine pour plus de propreté
-        run: |
+          docker build -t calculator .
           docker stop calculator || true
           docker rm calculator || true
-
-      - name: Lancer nouveau container
-        # Note: On utilise -d car c'est un serveur, mais attention 
-        # car votre code actuel attend des inputs (stdin) !
-        run: docker run -d --name calculator calculator
+          docker run -d --name calculator calculator
