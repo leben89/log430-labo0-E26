@@ -6,13 +6,9 @@ Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 
 from calculator import Calculator
 
-calc = Calculator()
-
 def test_app():
     my_calculator = Calculator()
     welcome_message = my_calculator.get_hello_message()
     assert "== Calculatrice v1.0 ==" in welcome_message
 
-def test_addition():
-    calc = Calculator()
-    assert calc.addition(2, 3) == 5
+# TODO: ajoutez les tests

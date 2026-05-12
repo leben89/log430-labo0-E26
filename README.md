@@ -234,7 +234,7 @@ Veuillez attendre 30-40 secondes que la VM redémarre.
 Pour définir une IP statique pour votre VM, exécutez la commande ci-dessus. Remplacez `<VOTRE_IP>` par une adresse IP de la plage `10.194.32.155` à `10.194.32.253`. Cela veut dire que nous avons 99 IPs disponibles.
 
 > 🚫 **ATTENTION** : Il est **strictement interdit** d'utiliser des adresses autres que celles réservées (de `10.194.32.155` à `10.194.32.253`). Si quelqu'un abuse et décide d'attribuer une adresse qui est en dehors de la plage comme `10.194.32.34`, l'accès aux serveurs sera révoqué pour la personne fautive et ses machines seront arrêtées.
-> ⚠️ **IMPORTANT** : Pour éviter des conflits d'adresse IP avec vos camarades, choisissez une adresse et enregistrez votre nom dans [ce document](https://docs.google.com/spreadsheets/d/1_0PlzMmwb-4yuldcmiKLJd8DlUnk10k1zmhdApn2EKw/edit?usp=sharing) afin de les informer.
+> ⚠️ **IMPORTANT** : Pour éviter des conflits d'adresse IP avec vos camarades, choisissez une adresse et enregistrez votre nom dans [ce document](https://docs.google.com/spreadsheets/d/1R9xkjllqm20-4k7mT3_JpbhTqQcAbhKceuWu98zOlG8/edit?usp=sharing) afin de les informer.
 
 ```bash
 # Créer le fichier de configuration netplan
