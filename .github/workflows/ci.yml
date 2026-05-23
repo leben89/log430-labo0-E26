@@ -56,5 +56,5 @@ jobs:
 
       - name: Lancer nouveau container
         # Note: On utilise -d car c'est un serveur, mais attention 
-        # car votre code actuel attend des inputs (stdin) !
+        # car le code actuel attend des inputs (stdin) !
         run: docker run -d --name calculator calculator
